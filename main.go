@@ -24,7 +24,7 @@ func main() {
 			panic(err)
 		}
 	}(models.DB)
-	models.DB.AutoMigrate()
+	models.DB.AutoMigrate(&models.Student{}, &models.PaperList{})
 
 	initRoutes(r)
 

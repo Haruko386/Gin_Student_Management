@@ -16,3 +16,15 @@ func InitMysql() (err error) {
 	err = DB.DB().Ping()
 	return err
 }
+
+type Student struct {
+	Id    int
+	Name  string
+	Grade string
+}
+
+type PaperList struct {
+	Author  Student
+	Journal string
+	Title   string
+}
