@@ -13,6 +13,7 @@ func main() {
 	r.Static("/static", "./static")
 	r.Static("assets", "./assets")
 
+	// database
 	err := models.InitMysql()
 	if err != nil {
 		return
@@ -26,6 +27,7 @@ func main() {
 	}(models.DB)
 	models.DB.AutoMigrate(&models.Student{}, &models.PaperList{}, &models.Teacher{})
 
+	// init routes
 	initRoutes(r)
 
 	err = r.Run(":8081")

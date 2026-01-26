@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理控制台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000;
+        }
+        /* 顶部导航 */
+        .admin-navbar {
+            background-color: #000;
+            color: #fff;
+            padding: 1rem 0;
+        }
+        .admin-brand {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* 表格样式 */
+        .table-container {
+            border: 2px solid #000;
+            margin-top: 2rem;
+        }
+        .table thead th {
+            background-color: #f2f2f2;
+            color: #000;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #000;
+            padding: 1rem;
+        }
+        .table tbody td {
+            vertical-align: middle;
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        /* 字体与标签 */
+        .mono-font {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+        }
+        .badge-role {
+            border: 1px solid #000;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-super {
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* 按钮 */
+        .btn-black {
+            background-color: #000;
+            color: #fff;
+            border: 1px solid #000;
+            border-radius: 0;
+        }
+        .btn-black:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        .btn-action {
+            text-decoration: none;
+            color: #000;
+            font-size: 0.9rem;
+            margin-right: 15px;
+        }
+        .btn-action:hover {
+            text-decoration: underline;
+        }
+
+        /* 模态框 */
+        .modal-content {
+            border: 2px solid #000;
+            border-radius: 0;
+        }
+        .modal-header {
+            background-color: #000;
+            color: #fff;
+            border-bottom: none;
+        }
+        .btn-close-white {
+            filter: invert(1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-navbar">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="#" class="admin-brand">
+            <i class="bi bi-shield-lock-fill me-2"></i>ROOT_CONSOLE
+        </a>
+        <div class="d-flex align-items-center">
+            <span class="mono-font me-4 small">USER: SUPER_ADMIN (ID:1)</span>
+            <a href="/" class="text-white text-decoration-none me-3 small">
+                <i class="bi bi-arrow-return-left"></i> 返回前台
+            </a>
+            <a href="/logout" class="text-white text-decoration-none small">LOGOUT</a>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row mb-4 align-items-end">
+        <div class="col-md-8">
+            <h2 class="fw-bold mb-1">FACULTY MANAGEMENT</h2>
+            <p class="text-muted">Manage teacher accounts and assign administrative privileges.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-black" data-bs-toggle="modal" data-bs-target="#addTeacherModal">
+                <i class="bi bi-plus-lg me-1"></i> ADD TEACHER
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table mb-0 table-hover">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Teacher Name</th>
+                <th>Role / Status</th>
+                <th>Last Login</th>
+                <th class="text-end">Controls</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{ range .Teachers }}
+                <tr>
+                    <td class="mono-font">#{{ .ID }}</td>
+                    <td class="fw-bold">{{ .Name }}</td>
+                    <td>
+                        {{ if eq .ID 1 }}
+                            <span class="badge-role badge-super">SUPER ADMIN</span>
+                        {{ else if .IsAdmin }}
+                            <span class="badge-role">ADMIN</span>
+                        {{ else }}
+                            <span class="text-muted small">INSTRUCTOR</span>
+                        {{ end }}
+                    </td>
+                    <td class="mono-font small text-muted">2026-01-26 10:00</td> <td class="text-end">
+                        {{ if ne .ID 1 }} {{ if .IsAdmin }}
+                            <a href="/admin/revoke/{{ .ID }}" class="btn-action text-muted">
+                                <i class="bi bi-person-dash"></i> Revoke Admin
+                            </a>
+                        {{ else }}
+                            <a href="/admin/grant/{{ .ID }}" class="btn-action fw-bold">
+                                <i class="bi bi-person-check-fill"></i> Make Admin
+                            </a>
+                        {{ end }}
+
+                        <a href="/admin/delete_teacher/{{ .ID }}" class="text-danger text-decoration-none small" onclick="return confirm('WARNING: Delete this teacher account?')">
+                            [DELETE]
+                        </a>
+                        {{ else }}
+                            <span class="text-muted small fst-italic">System Protected</span>
+                        {{ end }}
+                    </td>
+                </tr>
+            {{ end }}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="addTeacherModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title mono-font">NEW FACULTY MEMBER</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/admin/add_teacher" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Full Name</label>
+                        <input type="text" name="name" class="form-control rounded-0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Initial Password</label>
+                        <input type="text" name="password" class="form-control rounded-0" value="123456" required>
+                        <div class="form-text">Default is 123456.</div>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_admin" value="true" id="checkAdmin">
+                        <label class="form-check-label small" for="checkAdmin">
+                            Grant Admin Privileges immediately
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="submit" class="btn btn-black w-100">CREATE ACCOUNT</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -3,57 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首页 - 学生管理系统</title>
+    <title>学生管理系统</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
+        :root {
+            --bs-body-bg: #ffffff;
+            --bs-body-color: #000000;
+        }
+
         body {
-            background-color: #f8f9fa;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
+
+        /* 导航栏 */
         .navbar {
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 2px solid #000;
+            padding-top: 1.2rem;
+            padding-bottom: 1.2rem;
         }
-        .content-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+
+        .navbar-brand {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 900;
+            letter-spacing: -1px;
+            font-size: 1.5rem;
         }
+
+        /* 表格样式 */
+        .table-container {
+            border: 1px solid #000;
+        }
+
         .table thead th {
-            background-color: #f8f9fa;
-            color: #495057;
+            background-color: #000;
+            color: #fff;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            border: none;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .mono-font {
+            font-family: 'Courier New', Courier, monospace;
             font-weight: 600;
-            border-bottom: 2px solid #dee2e6;
         }
-        .btn-dark-outline {
-            color: #343a40;
-            border-color: #343a40;
+
+        /* 按钮与控件 */
+        .btn-outline-black {
+            color: #000;
+            border: 1px solid #000;
+            border-radius: 0;
         }
-        .btn-dark-outline:hover {
-            background-color: #343a40;
-            color: white;
+
+        .btn-outline-black:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .btn-black {
+            background-color: #000;
+            color: #fff;
+            border: 1px solid #000;
+            border-radius: 0;
+        }
+
+        .btn-black:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .form-control {
+            border-radius: 0;
+            border: 1px solid #ccc;
+        }
+
+        .form-control:focus {
+            border-color: #000;
+            box-shadow: none;
+        }
+
+        /* 分页 */
+        .page-link {
+            color: #000;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin: 0 5px;
+        }
+
+        .page-link:hover {
+            background: none;
+            border-bottom: 2px solid #ccc;
+            color: #000;
+        }
+
+        .page-item.active .page-link {
+            background-color: transparent;
+            border-bottom: 2px solid #000;
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* 模态框 */
+        .modal-content {
+            border-radius: 0;
+            border: 2px solid #000;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #000;
+            background-color: #f8f9fa;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #000;
         }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light py-3 mb-4">
+<nav class="navbar navbar-expand-lg navbar-light mb-5">
     <div class="container">
-        <a class="navbar-brand fw-bold text-secondary" href="#">
-            <i class="bi bi-mortarboard-fill me-2"></i>SMS 系统
+        <a class="navbar-brand" href="#">
+            <i class="bi bi-terminal-fill me-2"></i>SMS_CORE
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav align-items-center">
-                <li class="nav-item me-3">
-                    <span class="text-muted">欢迎, 管理员</span>
+                <li class="nav-item me-4">
+                    <span class="mono-font small">USER: {{ .User.Name }}</span>
                 </li>
+
+                {{ if .User.IsAdmin }}
+                    <li class="nav-item me-3">
+                        <a href="/admin/" class="btn btn-sm btn-black">ADMIN CONSOLE</a>
+                    </li>
+                {{ end }}
+
                 <li class="nav-item">
-                    <a href="/logout" class="btn btn-outline-secondary btn-sm">退出登录</a>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-black dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown">
+                            ACCOUNT
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end rounded-0 border-black">
+                            <li><a class="dropdown-item small" href="#" data-bs-toggle="modal"
+                                   data-bs-target="#changePwdModal">Change Password</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item small text-danger" href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -61,55 +169,65 @@
 </nav>
 
 <div class="container">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="text-secondary mb-0">学生列表</h4>
-        <div>
-            <form class="d-inline-flex" action="/" method="GET">
-                <input class="form-control form-control-sm me-2" type="search" placeholder="搜索姓名..." name="query">
-                <button class="btn btn-sm btn-outline-secondary" type="submit">搜索</button>
-            </form>
-            <button class="btn btn-sm btn-dark ms-2" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                <i class="bi bi-plus-lg"></i> 新增学生
-            </button>
+    <div class="row mb-4 align-items-end">
+        <div class="col-md-6">
+            <h4 class="fw-bold mb-1">STUDENT DATABASE</h4>
+            <p class="text-muted small mb-0">Manage academic records and profiles</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="d-inline-flex gap-2">
+                <form class="d-flex" action="/" method="GET">
+                    <input class="form-control me-2" type="search" placeholder="Search name..." name="query"
+                           style="width: 200px;">
+                    <button class="btn btn-outline-black" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+                <button class="btn btn-black" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                    <i class="bi bi-plus-lg me-1"></i> ADD NEW
+                </button>
+            </div>
         </div>
     </div>
 
-    <div class="content-card p-0 overflow-hidden">
-        <table class="table table-hover mb-0 align-middle">
+    <div class="table-container mb-5">
+        <table class="table mb-0 table-hover">
             <thead>
             <tr>
-                <th class="ps-4">ID</th>
-                <th>姓名</th>
-                <th>年龄</th>
-                <th>性别</th>
-                <th>班级</th>
-                <th>入学日期</th>
-                <th class="text-end pe-4">操作</th>
+                <th>ID No.</th>
+                <th>Full Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Class</th>
+                <th>Mentor</th>
+                <th>Join Date</th>
+                <th class="text-end">Actions</th>
             </tr>
             </thead>
             <tbody>
             {{ range .Students }}
                 <tr>
-                    <td class="ps-4 text-muted">#{{ .ID }}</td>
-                    <td class="fw-bold text-dark">{{ .Name }}</td>
-                    <td>{{ .Age }}</td>
+                    <td class="mono-font">#{{ .StudentID }}</td>
+                    <td class="fw-bold">{{ .Name }}</td>
+                    <td class="mono-font">{{ .Age }}</td>
                     <td>{{ .Gender }}</td>
-                    <td>{{ .Class }}</td>
-                    <td class="text-muted">{{ .JoinDate }}</td>
-                    <td class="text-end pe-4">
-                        <a href="/student/edit/{{ .ID }}" class="btn btn-sm btn-light text-secondary border">
-                            <i class="bi bi-pencil"></i>
+                    <td class="mono-font">{{ .Class }}</td>
+                    <td class="fw-bold text-primary">{{ .Mentor.Name }}</td>
+                    <td class="small text-muted">{{ .JoinDate.Format "2006-01-02" }}</td>
+                    <td class="small text-muted">{{ .JoinDate.Format "2006-01-02" }}</td>
+                    <td class="text-end">
+                        <a href="/student/edit/{{ .ID }}" class="text-dark me-3 text-decoration-none">
+                            <i class="bi bi-pencil-square"></i> Edit
                         </a>
-                        <a href="/student/delete/{{ .ID }}" class="btn btn-sm btn-light text-danger border ms-1" onclick="return confirm('确定要删除该学生吗？')">
-                            <i class="bi bi-trash"></i>
+                        <a href="/student/delete/{{ .ID }}" class="text-danger text-decoration-none"
+                           onclick="return confirm('Confirm Deletion?')">
+                            <i class="bi bi-x-square"></i> Delete
                         </a>
                     </td>
                 </tr>
             {{ else }}
                 <tr>
-                    <td colspan="7" class="text-center py-5 text-muted">
-                        暂无学生数据
+                    <td colspan="7" class="text-center py-5">
+                        <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+                        <span class="text-muted">No records found in database.</span>
                     </td>
                 </tr>
             {{ end }}
@@ -117,51 +235,90 @@
         </table>
     </div>
 
-    <nav class="mt-4">
+    <nav>
         <ul class="pagination justify-content-center">
-            <li class="page-item disabled"><a class="page-link text-secondary" href="#">上一页</a></li>
-            <li class="page-item active"><a class="page-link bg-secondary border-secondary" href="#">1</a></li>
-            <li class="page-item"><a class="page-link text-secondary" href="#">2</a></li>
-            <li class="page-item"><a class="page-link text-secondary" href="#">3</a></li>
-            <li class="page-item"><a class="page-link text-secondary" href="#">下一页</a></li>
+            <li class="page-item disabled"><a class="page-link" href="#">PREV</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">NEXT</a></li>
         </ul>
     </nav>
 </div>
 
 <div class="modal fade" id="addStudentModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">新增学生</h5>
+                <h5 class="modal-title fw-bold">NEW ENTRY</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="/student/add" method="POST">
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label">姓名</label>
+                        <label class="form-label small text-muted">Full Name</label>
                         <input type="text" name="name" class="form-control" required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">年龄</label>
+                            <label class="form-label small text-muted">Age</label>
                             <input type="number" name="age" class="form-control" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">性别</label>
-                            <select name="gender" class="form-select">
-                                <option value="男">男</option>
-                                <option value="女">女</option>
+                            <label class="form-label small text-muted">Gender</label>
+                            <select name="gender" class="form-select border-secondary rounded-0">
+                                <option value="男">Male</option>
+                                <option value="女">Female</option>
                             </select>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">班级</label>
+                        <label class="form-label small text-muted">Class</label>
                         <input type="text" name="class" class="form-control" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Mentor (Supervisor)</label>
+                        <select name="mentor_id" class="form-select border-secondary rounded-0">
+                            {{ range .Teachers }}
+                                <option value="{{ .ID }}">{{ .Name }} ({{ if .IsAdmin }}Admin{{ else }}Tutor{{ end }})
+                                </option>
+                            {{ end }}
+                        </select>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
-                    <button type="submit" class="btn btn-dark">保存</button>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-black" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="submit" class="btn btn-black px-4">SAVE RECORD</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="changePwdModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">CHANGE PASSWORD</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/update_password" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Old Password</label>
+                        <input type="password" name="old_password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">New Password</label>
+                        <input type="password" name="new_password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Confirm New Password</label>
+                        <input type="password" name="confirm_password" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-black" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="submit" class="btn btn-black px-4">UPDATE</button>
                 </div>
             </form>
         </div>

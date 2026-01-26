@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"time"
 )
 
 var DB *gorm.DB
@@ -13,28 +14,49 @@ func InitMysql() (err error) {
 	if err != nil {
 		return err
 	}
+	DB.AutoMigrate(&Student{}, &PaperList{}, &Teacher{})
+
+	var count int
+	DB.Model(&Teacher{}).Where("id = ?", 1).Count(&count)
+	if count == 0 {
+		superAdmin := Teacher{
+			Model:    gorm.Model{ID: 1},
+			Name:     "SuperAdmin",
+			Password: "password",
+			IsAdmin:  true,
+		}
+		DB.Create(&superAdmin)
+	}
+
 	err = DB.DB().Ping()
 	return err
 }
 
 type Student struct {
-	ID        uint
-	StudentID uint
-	Name      string
-	Age       int
-	Gender    string
-	Class     string
-	JoinDate  string
+	gorm.Model
+	Password  string    `json:"password"`
+	StudentID uint      `json:"student_id"`
+	Name      string    `json:"name"`
+	Age       int       `json:"age"`
+	Gender    string    `json:"gender"`
+	Class     string    `json:"class"`
+	JoinDate  time.Time `json:"join_date"`
+
+	MentorID uint    `json:"mentor"`
+	Mentor   Teacher `gorm:"foreignKey:MentorID"`
 }
 
 type Teacher struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	IsAdmin bool   `json:"isAdmin"`
+	gorm.Model
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	IsAdmin  bool   `json:"isAdmin"`
 }
 
 type PaperList struct {
-	Author  Student `json:"author"`
-	Journal string  `json:"journal"`
-	Title   string  `json:"title"`
+	gorm.Model
+	AuthorID uint   `json:"author_id"`
+	Journal  string `json:"journal"`
+	Title    string `json:"title"`
+	Storage  string `json:"storage"`
 }
