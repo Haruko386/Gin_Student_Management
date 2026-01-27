@@ -29,12 +29,13 @@ func initRoutes(r *gin.Engine) {
 		{
 			studentGroup.POST("/add", views.AddStudent)
 			studentGroup.GET("/delete/:id", views.DeleteStudent)
-			//studentGroup.GET("/edit/:id", views.EditStudentPage) // 稍后实现
+			studentGroup.GET("/edit/:id", views.EditStudentPage)
+			studentGroup.POST("/update", views.UpdateStudent)
 		}
 
 		// 4. 需要管理员权限的路由组
 		adminGroup := authorized.Group("/admin")
-		adminGroup.Use(AdminRequired()) // 挂载管理员拦截中间件
+		adminGroup.Use(SuperAdminRequired()) // 挂载管理员拦截中间件
 		{
 			adminGroup.GET("/", views.AdminDashBoard)
 			adminGroup.POST("/add_teacher", views.AddTeacher)
@@ -58,12 +59,19 @@ func AuthRequired() gin.HandlerFunc {
 	}
 }
 
-func AdminRequired() gin.HandlerFunc {
+func SuperAdminRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		isAdmin := session.Get("isAdmin")
-		if isAdmin == nil || isAdmin.(bool) == false {
-			c.String(http.StatusForbidden, "403 Forbidden: 权限不足")
+		userId := session.Get("userId")
+		if userId == nil {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
+		uid, ok := userId.(uint)
+		println(uid)
+		if !ok || uid != 1 {
+			c.String(http.StatusForbidden, "只有super admin可访问")
 			c.Abort()
 			return
 		}

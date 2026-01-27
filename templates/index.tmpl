@@ -138,10 +138,10 @@
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item me-4">
-                    <span class="mono-font small">USER: {{ .User.Name }}</span>
+                    <span class="mono-font small">Welcome: {{ .User.Name }}</span>
                 </li>
 
-                {{ if .User.IsAdmin }}
+                {{ if .User.IsSuper }}
                     <li class="nav-item me-3">
                         <a href="/admin/" class="btn btn-sm btn-black">ADMIN CONSOLE</a>
                     </li>
@@ -205,7 +205,7 @@
             <tbody>
             {{ range .Students }}
                 <tr>
-                    <td class="mono-font">#{{ .StudentID }}</td>
+                    <td class="mono-font">#{{ .ID }}</td>
                     <td class="fw-bold">{{ .Name }}</td>
                     <td class="mono-font">{{ .Age }}</td>
                     <td>{{ .Gender }}</td>
@@ -275,15 +275,22 @@
                         <label class="form-label small text-muted">Class</label>
                         <input type="text" name="class" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small text-muted">Mentor (Supervisor)</label>
-                        <select name="mentor_id" class="form-select border-secondary rounded-0">
-                            {{ range .Teachers }}
-                                <option value="{{ .ID }}">{{ .Name }} ({{ if .IsAdmin }}Admin{{ else }}Tutor{{ end }})
-                                </option>
-                            {{ end }}
-                        </select>
-                    </div>
+                    {{ if .User.IsSuper }}
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Assign Mentor</label>
+                            <select name="mentor_id" class="form-select border-secondary rounded-0">
+                                {{ range .Teachers }}
+                                    <option value="{{ .ID }}">{{ .Name }} (ID:{{ .ID }})</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    {{ else }}
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Mentor</label>
+                            <input type="text" class="form-control" value="{{ .User.Name }} (Self)" disabled>
+                            <div class="form-text small">You will be automatically assigned as the mentor.</div>
+                        </div>
+                    {{ end }}
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-outline-black" data-bs-dismiss="modal">CANCEL</button>

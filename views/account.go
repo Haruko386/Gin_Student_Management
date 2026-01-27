@@ -20,11 +20,14 @@ func Login(c *gin.Context) {
 
 	session := sessions.Default(c)
 	session.Set("userId", teacher.ID)
-	session.Set("username", teacher.Name)
+	session.Set("userName", teacher.Name)
 	session.Set("isAdmin", teacher.IsAdmin)
-	session.Save()
+	err := session.Save()
+	if err != nil {
+		return
+	}
 
-	if teacher.IsAdmin {
+	if teacher.ID == 1 {
 		c.Redirect(http.StatusFound, "/admin")
 	} else {
 		c.Redirect(http.StatusFound, "/")
@@ -34,14 +37,17 @@ func Login(c *gin.Context) {
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()
-	session.Save()
+	err := session.Save()
+	if err != nil {
+		return
+	}
 	c.Redirect(http.StatusFound, "/login")
 }
 
 func UpdatePassword(c *gin.Context) {
-	oldPwd := c.PostForm("oldPwd")
-	newPwd := c.PostForm("newPwd")
-	confirmPwd := c.PostForm("confirm")
+	oldPwd := c.PostForm("old_password")
+	newPwd := c.PostForm("new_password")
+	confirmPwd := c.PostForm("confirm_password")
 
 	if newPwd != confirmPwd {
 		c.String(http.StatusBadRequest, "两次输入密码不一致")
