@@ -22,7 +22,9 @@ func initRoutes(r *gin.Engine) {
 	authorized.Use(AuthRequired())
 	{
 		authorized.GET("/", views.GetStudentList)
-		authorized.POST("/update_password", views.UpdatePassword) // 修改密码接口
+		authorized.POST("/update_password", views.UpdatePassword)
+		authorized.GET("/student/dashboard", views.StudentDashboard)
+		authorized.POST("/student/upload_thesis", views.UploadThesis) // 修改密码接口
 
 		// 学生操作
 		studentGroup := authorized.Group("/student")

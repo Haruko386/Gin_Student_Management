@@ -10,27 +10,42 @@ import (
 func Login(c *gin.Context) {
 	id := c.PostForm("username")
 	password := c.PostForm("password")
-
-	var teacher models.Teacher
-
-	if err := models.DB.Where("id = ? AND password = ?", id, password).First(&teacher).Error; err != nil {
-		c.HTML(http.StatusBadRequest, "login.tmpl", gin.H{"error": "登陆失败，ID或密码错误"})
-		return
-	}
+	role := c.PostForm("role")
 
 	session := sessions.Default(c)
-	session.Set("userId", teacher.ID)
-	session.Set("userName", teacher.Name)
-	session.Set("isAdmin", teacher.IsAdmin)
-	err := session.Save()
-	if err != nil {
-		return
-	}
 
-	if teacher.ID == 1 {
-		c.Redirect(http.StatusFound, "/admin")
+	if role == "teacher" {
+		var teacher models.Teacher
+		if err := models.DB.Where("id = ? AND password = ?", id, password).First(&teacher).Error; err != nil {
+			c.HTML(http.StatusOK, "login.tmpl", gin.H{"Error": "Login Failed: Invalid ID or Password"})
+			return
+		}
+		// 老师登录成功
+		session.Set("userId", teacher.ID)
+		session.Set("userName", teacher.Name)
+		session.Set("role", "teacher")          // 记录角色
+		session.Set("isAdmin", teacher.IsAdmin) // 只有老师有这属性
+		session.Save()
+		if teacher.ID == 1 {
+			c.Redirect(http.StatusFound, "/admin")
+		} else {
+			c.Redirect(http.StatusFound, "/")
+		}
+
 	} else {
-		c.Redirect(http.StatusFound, "/")
+		// 学生登录逻辑
+		var student models.Student
+		if err := models.DB.Where("id = ? AND password = ?", id, password).First(&student).Error; err != nil {
+			c.HTML(http.StatusOK, "login.tmpl", gin.H{"Error": "Student Login Failed"})
+			return
+		}
+		// 学生登录成功
+		session.Set("userId", student.ID)
+		session.Set("userName", student.Name)
+		session.Set("role", "student")
+		session.Set("isAdmin", false)
+		session.Save()
+		c.Redirect(http.StatusFound, "/student/dashboard")
 	}
 }
 

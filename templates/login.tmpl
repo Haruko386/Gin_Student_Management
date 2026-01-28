@@ -14,6 +14,7 @@
             justify-content: center;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
+
         .login-card {
             width: 100%;
             max-width: 380px;
@@ -22,23 +23,27 @@
             background: #fff;
             padding: 2rem;
         }
+
         .form-label {
             font-weight: 600;
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+
         .form-control {
             border: 1px solid #dee2e6;
             border-radius: 0;
             padding: 0.75rem;
             background-color: #f8f9fa;
         }
+
         .form-control:focus {
             background-color: #fff;
             border-color: #000; /* 聚焦变黑 */
             box-shadow: none;
         }
+
         .btn-black {
             background-color: #000;
             color: #fff;
@@ -48,10 +53,12 @@
             letter-spacing: 1px;
             transition: all 0.2s;
         }
+
         .btn-black:hover {
             background-color: #fff;
             color: #000;
         }
+
         .brand-title {
             font-family: 'Courier New', Courier, monospace; /* 科技感字体 */
             font-weight: 700;
@@ -74,6 +81,18 @@
         <div class="mb-4">
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label d-block">Identity</label>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" id="roleTeacher" value="teacher" checked>
+                <label class="form-check-label small" for="roleTeacher">Teacher / Admin</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" id="roleStudent" value="student">
+                <label class="form-check-label small" for="roleStudent">Student</label>
+            </div>
         </div>
 
         {{ if .Error }}
